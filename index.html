@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>My first three.js app</title>
+    <title>Jule LAN Challenge</title>
     <style>
       body { margin: 0; background: #000; }
       .login-panel {
@@ -37,14 +37,6 @@
         cursor: pointer;
         font-weight: 600;
       }
-      .login-panel button:hover {
-        background: #1bffac;
-      }
-      .login-status {
-        color: #8bffdc;
-        font-size: 0.85rem;
-        align-self: center;
-      }
       .stage-two-wrapper {
         position: fixed;
         left: 50%;
@@ -67,14 +59,6 @@
         border-radius: 6px;
         cursor: pointer;
         box-shadow: 0 0 20px rgba(27, 255, 172, 0.35);
-        transition: transform 0.2s ease;
-      }
-      .stage-two-wrapper button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-      .stage-two-wrapper button:not(:disabled):hover {
-        transform: translateY(-1px) scale(1.02);
       }
       .stage-two-message {
         display: none;
@@ -84,20 +68,16 @@
         border-radius: 10px;
         font-family: 'SFMono-Regular', Consolas, monospace;
         font-size: 0.75rem;
-        max-width: 72vw;
-        max-height: 220px;
-        overflow: auto;
-        white-space: pre-wrap;
-        word-break: break-word;
         color: #9ef3d1;
-        box-shadow: 0 0 24px rgba(0, 255, 128, 0.25);
+        max-width: 72vw;
+        max-height: 200px;
+        overflow: auto;
       }
       #code-wall {
         position: fixed;
         inset: 0;
         font-family: 'SFMono-Regular', Consolas, monospace;
         font-size: 10px;
-        line-height: 1.2;
         letter-spacing: 0.03em;
         color: rgba(64, 255, 163, 0.35);
         pointer-events: none;
@@ -105,9 +85,6 @@
         padding: 32px;
         overflow: hidden;
         z-index: 0;
-        white-space: pre-wrap;
-        word-break: break-word;
-        text-shadow: 0 0 16px rgba(0, 255, 128, 0.5), 0 0 32px rgba(0, 255, 128, 0.25);
       }
       canvas {
         position: fixed;
@@ -124,56 +101,41 @@
         font-family: 'SFMono-Regular', Consolas, monospace;
         font-size: 9px;
         letter-spacing: 0.25em;
-        color: rgba(0, 255, 136, 0);
-        background: linear-gradient(120deg, rgba(0, 255, 136, 0.08), rgba(0, 255, 136, 0.02));
+        color: rgba(0,255,136,0);
+        background: rgba(0,255,136,0.05);
         border-radius: 10px;
-        text-decoration: none;
+        border: 1px solid rgba(0,255,136,0.12);
         opacity: 0;
-        pointer-events: auto;
-        transition: opacity 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-        border: 1px solid rgba(0, 255, 136, 0.12);
-        mix-blend-mode: screen;
-        user-select: text;
-      }
-      .stage-four-link:hover,
-      .stage-four-link:focus-visible {
-        opacity: 1;
-        color: #79ff91;
-        border-color: rgba(0, 255, 136, 0.35);
-        box-shadow: 0 0 18px rgba(0, 255, 136, 0.4);
+        text-decoration: none;
       }
     </style>
   </head>
+
   <body>
+
     <div class="login-panel">
       <input id="login-user" type="text" placeholder="Username" />
       <input id="login-pass" type="password" placeholder="Password" />
       <button type="button">Enter</button>
-      <span class="login-status" id="login-status"></span>
+      <span id="login-status" class="login-status"></span>
     </div>
+
     <div class="stage-two-wrapper">
       <button id="stage-two-btn" type="button">Stage Two</button>
-      <div class="stage-two-message" id="stage-two-message"></div>
+      <div id="stage-two-message" class="stage-two-message"></div>
     </div>
-    <img src="stego.png" alt="" width="1" height="1" style="display:block;position:absolute;left:0;top:0;" />
-    <div id="code-wall"></div>
-    <a class="stage-four-link" href="./stage4.html" aria-label="calibration dot">.</a>
-    <script>
-      // Friendly hacker greeting
-      console.log(
-        "%cWELCOME, OPERATOR",
-        "color:#00ff88; font-size:26px; font-weight:bold;"
-      );
-      console.log(
-        "%cIf you're reading this, you're already ahead of the others.",
-        "color:#88ffc8;"
-      );
-      console.log(
-        "%cHint: Search the source for something... encoded.",
-        "color:#38ffbc;"
-      );
 
-      // DevTools detection
+    <img src="stego.png" width="1" height="1" style="position:absolute;left:0;top:0;" />
+    <div id="code-wall"></div>
+
+    <a class="stage-four-link" href="./stage4.html" aria-label="calibration">.</a>
+
+    <!-- INLINE SCRIPT FORCED TO NOT BE A MODULE -->
+    <script nomodule>
+      console.log("%cWELCOME, OPERATOR", "color:#00ff88;font-size:26px;font-weight:bold");
+      console.log("%cIf you're reading this, you're ahead", "color:#88ffc8");
+      console.log("%cHint: Search the source...", "color:#38ffbc");
+
       let devtoolsSeen = false;
       setInterval(() => {
         const t0 = performance.now();
@@ -181,19 +143,17 @@
         const t1 = performance.now();
         if (t1 - t0 > 50 && !devtoolsSeen) {
           devtoolsSeen = true;
-          console.log(
-            "%cDEVELOPER MODE ACTIVATED",
-            "color:#00ff88; font-size:22px;"
-          );
-          console.log(
-            "%cTry checking the <img> tags... not all images are visible 👀",
-            "color:#88ffc8;"
-          );
+          console.log("%cDEVELOPER MODE ACTIVATED","color:#00ff88;font-size:22px;");
+          console.log("%cCheck <img> tags...","color:#88ffc8");
         }
       }, 500);
     </script>
-    <script type="module" src="./main.js"></script>
-       <script>
+
+    <!-- ONLY THIS FILE IS A MODULE -->
+    <script type="module" src="main.js"></script>
+
+    <!-- ALL OTHER LOGIC NON-MODULE -->
+    <script nomodule>
       (function () {
         const statusEl = document.getElementById('login-status');
         const userField = document.getElementById('login-user');
@@ -203,122 +163,48 @@
         const stageTwoMessage = document.getElementById('stage-two-message');
         const codeWall = document.getElementById('code-wall');
 
-        
         const stageTwoCipherB64 = 'Xl5HUEleXkZBSV9eR1FIXl5XUUlfX0dRSV5PR1BIX19HUUlOXkZRSV5fRlBZX19GUUlfX0ZBSV5eR1FJXl9XUUhfX0dQSV5PR1BIXl9GUUhOX0ZQSF5eR1FZXl9GUUleX0dBSV9eRlFJX15XUUhfX0ZRSF9PR1BIXl5HUElOX0ZQSF5eR1BZXl5GUUhfX0dBSV9eRlFIXl9XUUhfX0dQSV9PR1FIXl9HUUlOX0ZQSV5fRlFZXl5GUUheX0ZBSV9eR1BIXl9XUUhfX0dQSV5PR1BIXl9GUUhOX0ZQSF5eR1FZXl9GUUleX0dBSV9eR1FIX19XUUhfX0ZQSF9PR1BIX19HUElOX0dQSV5fR1FZXl5GUUhfXkdBSV9eR1FIXl5XUUhfXkdRSF9PR1BIX19GUUlOX0ZQSV5eR1BZXl9GUUleX0dBSV9eR1FIXl9XUUhfX0dQSV9PR1BIXl5GUUlOX0dQSV9eRlFZXl9HUUheXkdBSV9eRlFJXl9XUUhfX0dRSV9PR1BIX19HUEhOX0ZQSF5fRlBZXl5GUUhfXkZBSV9eRlFJX19XUUhfX0dQSV5PR1FIXl9HUUlOX0ZQSV5eR1BZXl5GUEleXkdBSV5eR1FJXl9XUUhfX0ZQSF9PR1BIX19HUEhOX0ZQSF5eR1FZXl5GUUlfX0ZBSV9eR1BJX15XUUhfX0dRSV9PR1BIXl5HUEhOX0ZQSV5eR1A=';
+
         let stageTwoUnlocked = false;
         let stageTwoBinary = '';
 
         function xorDecode(password, b64) {
-          if (!password) return null;
-          const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+          const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
           const key = new TextEncoder().encode(password);
-          const out = new Uint8Array(bytes.length);
-          for (let i = 0; i < bytes.length; i++) {
-            out[i] = bytes[i] ^ key[i % key.length];
-          }
-          return out;
+          return bytes.map((b, i) => b ^ key[i % key.length]);
         }
 
         function unlockStageTwo(secretBytes) {
-          if (!secretBytes || !secretBytes.length) return;
           stageTwoUnlocked = true;
-          try {
-            stageTwoBinary = new TextDecoder().decode(secretBytes);
-          } catch (err) {
-            stageTwoBinary = '';
-          }
-          if (stageTwoBtn) {
-            stageTwoBtn.style.display = 'inline-flex';
-            stageTwoBtn.disabled = false;
-          }
+          stageTwoBinary = new TextDecoder().decode(secretBytes);
+          stageTwoBtn.style.display = 'inline-flex';
         }
 
         function revealStageTwo() {
-          if (!stageTwoBinary) return;
-          if (stageTwoMessage) {
-            stageTwoMessage.textContent = stageTwoBinary;
-            stageTwoMessage.style.display = 'block';
-          }
-          if (stageTwoBtn) {
-            stageTwoBtn.disabled = true;
-          }
+          stageTwoMessage.textContent = stageTwoBinary;
+          stageTwoMessage.style.display = 'block';
+          stageTwoBtn.disabled = true;
         }
 
-        if (stageTwoBtn) {
-          stageTwoBtn.addEventListener('click', revealStageTwo);
-        }
+        stageTwoBtn.addEventListener('click', revealStageTwo);
 
-        const encodedSecret = 'bm93YXk='; // base64 for "noway"
+        const encodedSecret = 'bm93YXk='; // noway
 
         function checkLogin() {
-          const candidate = atob(encodedSecret);
-          const usernameMatches = userField.value === 'admin';
-          const passwordMatches = passField.value === candidate;
-          const hasAccess = usernameMatches && passwordMatches;
-          statusEl.textContent = hasAccess ? 'ACCESS GRANTED' : 'ACCESS DENIED';
-          statusEl.style.color = hasAccess ? '#79ff91' : '#ff5f6c';
-          if (hasAccess && !stageTwoUnlocked) {
-            const secretBytes = xorDecode(passField.value, stageTwoCipherB64);
-            unlockStageTwo(secretBytes);
+          const expected = atob(encodedSecret);
+          const ok = userField.value === 'admin' && passField.value === expected;
+          statusEl.textContent = ok ? 'ACCESS GRANTED' : 'ACCESS DENIED';
+          statusEl.style.color = ok ? '#79ff91' : '#ff5f6c';
+          if (ok && !stageTwoUnlocked) {
+            unlockStageTwo(xorDecode(passField.value, stageTwoCipherB64));
           }
-          if (window.setLoginResult) {
-            window.setLoginResult(hasAccess ? 'success' : 'failed');
-          }
+          window.setLoginResult?.(ok ? 'success' : 'failed');
         }
 
         button.addEventListener('click', checkLogin);
-        passField.addEventListener('keydown', (event) => {
-          if (event.key === 'Enter') {
-            checkLogin();
-          }
-        });
 
-        // existing code-wall logic unchanged...
-
-        if (codeWall) {
-          const refreshMetrics = () => {
-            const style = window.getComputedStyle(codeWall);
-            const parsed = parseFloat(style.lineHeight);
-            return Number.isNaN(parsed) ? 10 : parsed;
-          };
-          let lineHeight = refreshMetrics();
-          window.addEventListener('resize', () => {
-            lineHeight = refreshMetrics();
-          });
-
-          const stopOverflow = () => {
-            if (codeWall.scrollHeight > codeWall.clientHeight) {
-              codeWall.textContent = '';
-            }
-          };
-
-          fetch('main.js')
-            .then((res) => res.text())
-            .then((text) => {
-              let index = 0;
-              const speed = 16;
-              function typeLoop() {
-                index = Math.min(text.length, index + 1);
-                codeWall.textContent += text[index - 1] || '';
-                stopOverflow();
-                if (index < text.length) {
-                  setTimeout(typeLoop, speed);
-                } else {
-                  setTimeout(() => {
-                    index = 0;
-                    codeWall.textContent = '';
-                    stopOverflow();
-                    setTimeout(typeLoop, 400);
-                  }, 1600);
-                }
-              }
-              typeLoop();
-            })
-            .catch(() => {
-              codeWall.textContent = '';
-            });
-        }
       })();
     </script>
+
   </body>
 </html>
