@@ -1,6 +1,7 @@
-import * as THREE from 'three';
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
-import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+// 🔧 FIXED IMPORTS FOR GITHUB PAGES — Using CDN ES Modules
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+import { FontLoader } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/FontLoader.js";
+import { TextGeometry } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/geometries/TextGeometry.js";
 
 const scene = new THREE.Scene();
 scene.background = null;
@@ -186,8 +187,7 @@ function animate() {
 
   light1.position.x = Math.cos(t * 0.65) * LIGHT_ORBIT_RADIUS;
   light1.position.z = Math.sin(t * 0.65) * LIGHT_ORBIT_RADIUS;
-  light1.position.y =
-    2 + Math.sin(t * 0.45) * LIGHT_VERTICAL_AMPLITUDE;
+  light1.position.y = 2 + Math.sin(t * 0.45) * LIGHT_VERTICAL_AMPLITUDE;
 
   nodes.rotation.x += 0.015;
   nodes.rotation.y += 0.038;
@@ -196,21 +196,17 @@ function animate() {
   for (let i = 0; i < bodyVertexCount; i++) {
     const idx = i * 3;
     const phase = bodyPhases[i];
-    const wobble =
-      Math.sin(t * BODY_WOBBLE_SPEED + phase) * BODY_WOBBLE_AMPLITUDE;
+    const wobble = Math.sin(t * BODY_WOBBLE_SPEED + phase) * BODY_WOBBLE_AMPLITUDE;
     positions[idx] = bodyBasePositions[idx] + bodyNormals[idx] * wobble;
-    positions[idx + 1] =
-      bodyBasePositions[idx + 1] + bodyNormals[idx + 1] * wobble;
-    positions[idx + 2] =
-      bodyBasePositions[idx + 2] + bodyNormals[idx + 2] * wobble;
+    positions[idx + 1] = bodyBasePositions[idx + 1] + bodyNormals[idx + 1] * wobble;
+    positions[idx + 2] = bodyBasePositions[idx + 2] + bodyNormals[idx + 2] * wobble;
   }
   bodyPositionAttr.needsUpdate = true;
   bodyGeom.computeVertexNormals();
 
   const baseScale = 1 + Math.sin(t) * 0.05;
-  if (loginState !== 'success') {
-    explosionAmount = 0;
-  }
+  if (loginState !== 'success') explosionAmount = 0;
+
   let scaleScalar = baseScale;
   if (loginState === 'success') {
     explosionAmount = Math.min(explosionAmount + 0.03, BODY_SUCCESS_EXPLOSION_MAX);
@@ -230,13 +226,14 @@ function animate() {
   } else if (loginState === 'failed_idle') {
     body.position.set(0, 0, 0);
   } else if (loginState === 'success') {
-    const successDepth =
-      BODY_SUCCESS_POSITION_OFFSET - explosionAmount * BODY_SUCCESS_POSITION_MULTIPLIER;
+    const successDepth = BODY_SUCCESS_POSITION_OFFSET - explosionAmount * BODY_SUCCESS_POSITION_MULTIPLIER;
     body.position.set(0, 0, successDepth);
   } else {
     body.position.set(0, 0, 0);
   }
+
   body.scale.setScalar(scaleScalar);
+
   if (loginState === 'failed' || loginState === 'failed_idle') {
     bodyMat.color.lerp(BODY_FAIL_COLOR, 0.08);
   } else if (loginState === 'success') {
@@ -246,22 +243,22 @@ function animate() {
   }
 
   nodes.children.forEach((node) => {
-    const flicker =
-      Math.sin(t * node.userData.flickerSpeed + node.userData.flickerPhase);
+    const flicker = Math.sin(t * node.userData.flickerSpeed + node.userData.flickerPhase);
     const visible = flicker > -0.25;
     node.visible = visible;
+
     if (visible) {
       const flickerScale = 0.6 + Math.max(0, flicker) * 0.9;
       node.scale.setScalar(node.userData.baseScale * flickerScale);
-      node.userData.material.emissiveIntensity =
-        0.2 + Math.max(0, flicker) * 0.9;
+      node.userData.material.emissiveIntensity = 0.2 + Math.max(0, flicker) * 0.9;
     }
+
     const distance =
       node.userData.baseDistance +
       (loginState === 'success' ? explosionAmount * 3.5 : 0);
-    node.position
-      .copy(node.userData.direction)
-      .multiplyScalar(distance);
+
+    node.position.copy(node.userData.direction).multiplyScalar(distance);
+
     if (loginState === 'failed' || loginState === 'failed_idle') {
       node.userData.material.color.lerp(NODE_FAIL_COLOR, 0.05);
       node.userData.material.emissive.lerp(NODE_FAIL_EMISSIVE, 0.05);
@@ -289,7 +286,7 @@ window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// Subtle console Easter egg for those peeking under the hood.
+// Subtle console Easter egg under the hood
 (function showConsoleEasterEgg() {
   const primary = 'background:#082015;color:#79ff91;padding:8px 12px;border-radius:10px 0 0 10px;font-weight:700;font-size:13px;';
   const secondary = 'background:#0a120e;color:#9ef3d1;padding:8px 12px;border-radius:0 10px 10px 0;font-size:12px;';
