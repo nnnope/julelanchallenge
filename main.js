@@ -155,18 +155,23 @@ loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json
     colors[i * 3 + 2] = vertexColor.b;
   }
   textGeom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-  const textMat = new THREE.MeshPhysicalMaterial({
-    color: 0x330004,
-    emissive: 0x330004,
-    emissiveIntensity: 1.2,
-    roughness: 0.08,
-    metalness: 0.9,
-    clearcoat: 0.7,
-    clearcoatRoughness: 0.2,
-    transparent: true,
-    opacity: 0.95,
-    vertexColors: true,
-  });
+const textMat = new THREE.MeshPhysicalMaterial({
+  color: 0x330004,
+  emissive: 0x330004,
+  emissiveIntensity: 1.2,
+  roughness: 0.08,
+  metalness: 0.9,
+  clearcoat: 0.7,
+  clearcoatRoughness: 0.2,
+  transparent: true,
+  opacity: 0.95,
+  vertexColors: true,
+});
+
+// THIS is the fix
+textMat.depthWrite = false;
+// (optional but safe)
+// textMat.depthTest = false;
   const textMesh = new THREE.Mesh(textGeom, textMat);
   textMesh.position.set(0, -2.4, 0.2);
   textMesh.rotation.y = 0.04;
