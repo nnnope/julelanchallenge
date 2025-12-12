@@ -1,13 +1,20 @@
-// GitHub pages compatible imports
+// GitHub pages compatible imports – version is controlled by the importmap in index.html
 import * as THREE from 'three';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+
+console.log('THREE.REVISION', THREE.REVISION); // should be 174 (or whatever you pinned)
 
 const scene = new THREE.Scene();
 scene.background = null;
 const BODY_NORMAL_COLOR = new THREE.Color(0x22ff88);
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
 camera.position.z = 8;
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -82,11 +89,14 @@ scene.add(nodes);
 const light1 = new THREE.PointLight(0xf1ffff, 1.4);
 light1.position.set(4, 3, 5);
 scene.add(light1);
+
 const fillLight = new THREE.PointLight(0xffcc88, 0.7);
 fillLight.position.set(-3, -2, 3);
 scene.add(fillLight);
+
 const ambientLight = new THREE.AmbientLight(0x99aaff, 1.1);
 scene.add(ambientLight);
+
 const hemiLight = new THREE.HemisphereLight(0x88bbff, 0x331122, 0.35);
 scene.add(hemiLight);
 
@@ -107,10 +117,12 @@ const BODY_SUCCESS_SCALE_OFFSET = 0.8;
 const BODY_SUCCESS_EXPLOSION_MAX = 2.0;
 const BODY_SUCCESS_POSITION_OFFSET = -1.5;
 const BODY_SUCCESS_POSITION_MULTIPLIER = 2.5;
+
 let loginState = 'idle';
 let explosionAmount = 0;
 const FAIL_SHAKE_DURATION = 2;
 let failTimer = FAIL_SHAKE_DURATION;
+
 window.setLoginResult = (state) => {
   loginState = state;
   if (state === 'failed') {
@@ -125,65 +137,81 @@ window.setLoginResult = (state) => {
 // === Text ===
 const loader = new FontLoader();
 let textGlow;
-loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
-  const textGeom = new TextGeometry('ACCOUNT LOGIN', {
-    font,
-    size: 0.6,
-    depth: 0.2,
-    curveSegments: 12,
-    bevelEnabled: true,
-    bevelThickness: 0.02,
-    bevelSize: 0.03,
-  });
-  textGeom.center();
-  textGeom.computeBoundingBox();
-  const positions = textGeom.getAttribute('position');
-  const colors = new Float32Array(positions.count * 3);
-  const baseColor = new THREE.Color(0x4f0509);
-  const accentColor = new THREE.Color(0x007733);
-  const vertexColor = new THREE.Color();
-  const minX = textGeom.boundingBox.min.x;
-  const maxX = textGeom.boundingBox.max.x;
-  const highlightStart = minX + (maxX - minX) * 0.4;
-  const highlightRange = Math.max(0.001, maxX - highlightStart);
-  for (let i = 0; i < positions.count; i++) {
-    const x = positions.getX(i);
-    const highlightAmount = Math.max(0, Math.min(1, (x - highlightStart) / highlightRange));
-    vertexColor.copy(baseColor).lerp(accentColor, highlightAmount);
-    colors[i * 3] = vertexColor.r;
-    colors[i * 3 + 1] = vertexColor.g;
-    colors[i * 3 + 2] = vertexColor.b;
-  }
-  textGeom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-const textMat = new THREE.MeshPhysicalMaterial({
-  color: 0x330004,
-  emissive: 0x330004,
-  emissiveIntensity: 1.2,
-  roughness: 0.08,
-  metalness: 0.9,
-  clearcoat: 0.7,
-  clearcoatRoughness: 0.2,
-  transparent: true,
-  opacity: 0.95,
-  vertexColors: true,
-});
 
-// THIS is the fix
-textMat.depthWrite = false;
-// (optional but safe)
-// textMat.depthTest = false;
-  const textMesh = new THREE.Mesh(textGeom, textMat);
-  textMesh.position.set(0, -2.4, 0.2);
-  textMesh.rotation.y = 0.04;
-  textMesh.scale.setScalar(1.04);
-  scene.add(textMesh);
-  textGlow = new THREE.PointLight(0x22ff88, 1.0, 5, 2);
-  textGlow.position.set(0, -2.5, 1);
-  scene.add(textGlow);
-});
+loader.load(
+  // match the three.js version used in the importmap
+  'https://cdn.jsdelivr.net/npm/three@0.174.0/examples/fonts/helvetiker_regular.typeface.json',
+  (font) => {
+    const textGeom = new TextGeometry('ACCOUNT LOGIN', {
+      font,
+      size: 0.6,
+      depth: 0.2, // works as thickness with modern TextGeometry
+      curveSegments: 12,
+      bevelEnabled: true,
+      bevelThickness: 0.02,
+      bevelSize: 0.03,
+    });
+
+    textGeom.center();
+    textGeom.computeBoundingBox();
+
+    const positions = textGeom.getAttribute('position');
+    const colors = new Float32Array(positions.count * 3);
+    const baseColor = new THREE.Color(0x4f0509);
+    const accentColor = new THREE.Color(0x007733);
+    const vertexColor = new THREE.Color();
+    const minX = textGeom.boundingBox.min.x;
+    const maxX = textGeom.boundingBox.max.x;
+    const highlightStart = minX + (maxX - minX) * 0.4;
+    const highlightRange = Math.max(0.001, maxX - highlightStart);
+
+    for (let i = 0; i < positions.count; i++) {
+      const x = positions.getX(i);
+      const highlightAmount = Math.max(
+        0,
+        Math.min(1, (x - highlightStart) / highlightRange)
+      );
+      vertexColor.copy(baseColor).lerp(accentColor, highlightAmount);
+      colors[i * 3] = vertexColor.r;
+      colors[i * 3 + 1] = vertexColor.g;
+      colors[i * 3 + 2] = vertexColor.b;
+    }
+
+    textGeom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    const textMat = new THREE.MeshPhysicalMaterial({
+      color: 0x330004,
+      emissive: 0x330004,
+      emissiveIntensity: 1.2,
+      roughness: 0.08,
+      metalness: 0.9,
+      clearcoat: 0.7,
+      clearcoatRoughness: 0.2,
+      transparent: true,
+      opacity: 0.95,
+      vertexColors: true,
+    });
+
+    // If you still get weird depth artifacts, uncomment this:
+    // textMat.depthWrite = false;
+
+    const textMesh = new THREE.Mesh(textGeom, textMat);
+    textMesh.position.set(0, -2.4, 0.2);
+    textMesh.rotation.y = 0.04;
+    textMesh.scale.setScalar(1.04);
+    scene.add(textMesh);
+
+    textGlow = new THREE.PointLight(0x22ff88, 1.0, 5, 2);
+    textGlow.position.set(0, -2.5, 1);
+    scene.add(textGlow);
+
+    console.log('TEXT DEPTH', textGeom.parameters?.depth);
+  }
+);
 
 // === Animation ===
 let t = 0;
+
 function animate() {
   t += 0.02;
 
@@ -192,8 +220,7 @@ function animate() {
 
   light1.position.x = Math.cos(t * 0.65) * LIGHT_ORBIT_RADIUS;
   light1.position.z = Math.sin(t * 0.65) * LIGHT_ORBIT_RADIUS;
-  light1.position.y =
-    2 + Math.sin(t * 0.45) * LIGHT_VERTICAL_AMPLITUDE;
+  light1.position.y = 2 + Math.sin(t * 0.45) * LIGHT_VERTICAL_AMPLITUDE;
 
   nodes.rotation.x += 0.015;
   nodes.rotation.y += 0.038;
@@ -202,8 +229,7 @@ function animate() {
   for (let i = 0; i < bodyVertexCount; i++) {
     const idx = i * 3;
     const phase = bodyPhases[i];
-    const wobble =
-      Math.sin(t * BODY_WOBBLE_SPEED + phase) * BODY_WOBBLE_AMPLITUDE;
+    const wobble = Math.sin(t * BODY_WOBBLE_SPEED + phase) * BODY_WOBBLE_AMPLITUDE;
     positions[idx] = bodyBasePositions[idx] + bodyNormals[idx] * wobble;
     positions[idx + 1] =
       bodyBasePositions[idx + 1] + bodyNormals[idx + 1] * wobble;
@@ -218,8 +244,12 @@ function animate() {
     explosionAmount = 0;
   }
   let scaleScalar = baseScale;
+
   if (loginState === 'success') {
-    explosionAmount = Math.min(explosionAmount + 0.03, BODY_SUCCESS_EXPLOSION_MAX);
+    explosionAmount = Math.min(
+      explosionAmount + 0.03,
+      BODY_SUCCESS_EXPLOSION_MAX
+    );
     scaleScalar += BODY_SUCCESS_SCALE_OFFSET + explosionAmount * 1.4;
   }
 
@@ -237,12 +267,15 @@ function animate() {
     body.position.set(0, 0, 0);
   } else if (loginState === 'success') {
     const successDepth =
-      BODY_SUCCESS_POSITION_OFFSET - explosionAmount * BODY_SUCCESS_POSITION_MULTIPLIER;
+      BODY_SUCCESS_POSITION_OFFSET -
+      explosionAmount * BODY_SUCCESS_POSITION_MULTIPLIER;
     body.position.set(0, 0, successDepth);
   } else {
     body.position.set(0, 0, 0);
   }
+
   body.scale.setScalar(scaleScalar);
+
   if (loginState === 'failed' || loginState === 'failed_idle') {
     bodyMat.color.lerp(BODY_FAIL_COLOR, 0.08);
   } else if (loginState === 'success') {
@@ -256,18 +289,20 @@ function animate() {
       Math.sin(t * node.userData.flickerSpeed + node.userData.flickerPhase);
     const visible = flicker > -0.25;
     node.visible = visible;
+
     if (visible) {
       const flickerScale = 0.6 + Math.max(0, flicker) * 0.9;
       node.scale.setScalar(node.userData.baseScale * flickerScale);
       node.userData.material.emissiveIntensity =
         0.2 + Math.max(0, flicker) * 0.9;
     }
+
     const distance =
       node.userData.baseDistance +
       (loginState === 'success' ? explosionAmount * 3.5 : 0);
-    node.position
-      .copy(node.userData.direction)
-      .multiplyScalar(distance);
+
+    node.position.copy(node.userData.direction).multiplyScalar(distance);
+
     if (loginState === 'failed' || loginState === 'failed_idle') {
       node.userData.material.color.lerp(NODE_FAIL_COLOR, 0.05);
       node.userData.material.emissive.lerp(NODE_FAIL_EMISSIVE, 0.05);
@@ -282,8 +317,11 @@ function animate() {
 
   if (textGlow) {
     const pulse = (Math.sin(t * TEXT_GLOW_SPEED) + 1) / 2;
-    textGlow.intensity =
-      THREE.MathUtils.lerp(TEXT_GLOW_MIN, TEXT_GLOW_MAX, pulse);
+    textGlow.intensity = THREE.MathUtils.lerp(
+      TEXT_GLOW_MIN,
+      TEXT_GLOW_MAX,
+      pulse
+    );
   }
 
   renderer.render(scene, camera);
@@ -297,8 +335,10 @@ window.addEventListener('resize', () => {
 
 // Subtle console Easter egg for those peeking under the hood.
 (function showConsoleEasterEgg() {
-  const primary = 'background:#082015;color:#79ff91;padding:8px 12px;border-radius:10px 0 0 10px;font-weight:700;font-size:13px;';
-  const secondary = 'background:#0a120e;color:#9ef3d1;padding:8px 12px;border-radius:0 10px 10px 0;font-size:12px;';
+  const primary =
+    'background:#082015;color:#79ff91;padding:8px 12px;border-radius:10px 0 0 10px;font-weight:700;font-size:13px;';
+  const secondary =
+    'background:#0a120e;color:#9ef3d1;padding:8px 12px;border-radius:0 10px 10px 0;font-size:12px;';
   console.log(
     '%cGreetings Napern — Sandefjord, December 25.%c If you solved all of this, you are a pretty good hackerman.',
     primary,
